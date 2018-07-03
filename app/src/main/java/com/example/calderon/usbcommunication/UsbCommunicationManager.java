@@ -7,15 +7,17 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import com.github.mjdev.libaums.UsbMassStorageDevice;
-
-import java.io.File;
 import com.github.mjdev.libaums.fs.FileSystem;
 import com.github.mjdev.libaums.fs.UsbFile;
 import com.github.mjdev.libaums.fs.UsbFileStreamFactory;
+import com.github.mjdev.libaums.partition.Partition;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -76,6 +78,39 @@ public class UsbCommunicationManager {
         }
     }
 
+    public void close(){
+        usbMassStorageDevices[0].close();
+    }
+
+    public void deleteFile() {
+        MainActivity.logTextView.append(System.currentTimeMillis()/1000 + " start deleted file! \n");
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    UsbFile root = currentFileSystem.getRootDirectory();
+                        for (UsbFile usbFile : root.listFiles()) {
+                            //MainActivity.logTextView.append(System.currentTimeMillis()/1000 + "  file: "+usbFile.getName() +"\n");
+                            if (usbFile.getName().contains("book")) {
+                                for (UsbFile bookChild : usbFile.listFiles()){
+                                    if (bookChild.getName().contains("05381") || (bookChild.getName().contains("05425"))) {
+                                        String name = bookChild.getName();
+                                        bookChild.delete();
+                                        MainActivity.logTextView.append(System.currentTimeMillis()/1000 + " deleted file: "+name +"\n");
+                                    }
+                                }
+                            }
+                        }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    MainActivity.logTextView.append(System.currentTimeMillis()/1000 + " deleted file error: "+e.getMessage()+"\n");
+                }
+                MainActivity.logTextView.append(System.currentTimeMillis()/1000 + " finish delete file!\n ");
+            }
+        });
+    }
+
+
     public void copyFileToUsb(File file) {
         CopyToUsbTaskParam param = new CopyToUsbTaskParam();
         param.paramList = new ArrayList<>();
@@ -86,12 +121,25 @@ public class UsbCommunicationManager {
         CopyToUsbTask ct = new CopyToUsbTask();
         ct.execute(param);
     }
+     public void copyFileToUsbWithName(File file,String name) {
+        CopyToUsbTaskParam param = new CopyToUsbTaskParam();
+        param.paramList = new ArrayList<>();
+        CopyToUsbTaskParam.SingleToUsbParam propertiesParam = param.new SingleToUsbParam();
+        propertiesParam.from = Uri.fromFile(file);
+        propertiesParam.name = name;
+        param.paramList.add(propertiesParam);
+        MainActivity.logTextView.append(System.currentTimeMillis()/1000 + " Copying file from internal storage to usb device\n");
+        CopyToUsbTask ct = new CopyToUsbTask();
+        ct.execute(param);
+    }
+
 
     private class CopyToUsbTaskParam {
         List<SingleToUsbParam> paramList;
 
         class SingleToUsbParam {
             Uri from;
+            String name;
         }
     }
 
@@ -115,37 +163,50 @@ public class UsbCommunicationManager {
                     UsbFile root = currentFileSystem.getRootDirectory();
                     UsbFile dirTo = null;
                     for(UsbFile usbFile : root.listFiles()){
-                        if(usbFile.getName().endsWith("usbCommunication")){
+                        if(usbFile.getName().endsWith("book")){
                             logs.add(System.currentTimeMillis()/1000 + " Folder usbCommunication found in usb device\n");
                             dirTo = usbFile;
                         }
                     }
                     if(dirTo == null) {
                         logs.add(System.currentTimeMillis()/1000 + " Creating folder usbCommunication in usb device\n");
-                        UsbFile directory = root.createDirectory("usbCommunication");
+                        UsbFile directory = root.createDirectory("book");
                         dirTo = directory;
                     }
-
-                    int counter = 0;
+/*                    int counter = 0;
                     for(UsbFile usbFile : dirTo.listFiles()) {
                         counter = Integer.parseInt(usbFile.getName().substring(usbFile.getName().indexOf('_') + 1, usbFile.getName().indexOf('.')));
                     }
-                    counter++;
-                    UsbFile file = dirTo.createFile("myCreatedFile_" + counter + ".txt");
+                    counter++;*/
+                    //UsbFile file = dirTo.createFile("myCreatedFile_" + counter + ".txt");
+                    UsbFile file;
+/*                    if (param.name.endsWith("kii")) {
+                        file = root.createFile(param.name);
+                    } else {
+                        file = dirTo.createFile(param.name);
+                    }*/
+                    file = dirTo.createFile(param.name);
 
                     InputStream inputStream = activity.getContentResolver().openInputStream(param.from);
                     OutputStream outputStream = UsbFileStreamFactory.createBufferedOutputStream(file, currentFileSystem);
 
                     byte[] bytes = new byte[currentFileSystem.getChunkSize()];
+                    logs.add(System.currentTimeMillis()/1000 + " chunkSize : "+bytes.length+ "\n");
                     int count;
 
                     while ((count = inputStream.read(bytes)) != -1){
                         outputStream.write(bytes, 0, count);
                     }
 
+                    outputStream.flush();
                     outputStream.close();
                     inputStream.close();
+                    file.flush();
                     file.close();
+/*                    if (param.name.endsWith("kii")) {
+                        logs.add(System.currentTimeMillis()/1000 + " start move kii file to book \n");
+                        file.moveTo(dirTo);
+                    }*/
                     logs.add(System.currentTimeMillis()/1000 + " Successfully copied file to usb device: " + "/" + dirTo.getName() + "/" + file.getName() + "\n");
                 } catch (Exception e) {
                     logs.add(System.currentTimeMillis()/1000 + " Error copying file to usb device: " + e.getMessage() + "\n");

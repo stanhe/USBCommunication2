@@ -21,6 +21,17 @@
             android:layout_height="wrap_content"
             android:text="Create new File" />
 
+        <Button
+            android:id="@+id/deleteFile"
+            android:onClick="deleteFile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="delete file" />
+        <Button
+            android:onClick="downloadBooks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="download"/>
         <TextView
             android:id="@+id/logTextView"
             android:layout_width="wrap_content"
