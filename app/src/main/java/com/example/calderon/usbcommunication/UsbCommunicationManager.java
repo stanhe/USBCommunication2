@@ -14,10 +14,8 @@ import com.github.mjdev.libaums.UsbMassStorageDevice;
 import com.github.mjdev.libaums.fs.FileSystem;
 import com.github.mjdev.libaums.fs.UsbFile;
 import com.github.mjdev.libaums.fs.UsbFileStreamFactory;
-import com.github.mjdev.libaums.partition.Partition;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -180,7 +178,7 @@ public class UsbCommunicationManager {
                     counter++;*/
                     //UsbFile file = dirTo.createFile("myCreatedFile_" + counter + ".txt");
                     UsbFile file;
-/*                    if (param.name.endsWith("kii")) {
+                    /*if (param.name.endsWith("kii")) {
                         file = root.createFile(param.name);
                     } else {
                         file = dirTo.createFile(param.name);
@@ -203,10 +201,11 @@ public class UsbCommunicationManager {
                     inputStream.close();
                     file.flush();
                     file.close();
-/*                    if (param.name.endsWith("kii")) {
+
+                    if (param.name.endsWith("kii")) {
                         logs.add(System.currentTimeMillis()/1000 + " start move kii file to book \n");
-                        file.moveTo(dirTo);
-                    }*/
+
+                    }
                     logs.add(System.currentTimeMillis()/1000 + " Successfully copied file to usb device: " + "/" + dirTo.getName() + "/" + file.getName() + "\n");
                 } catch (Exception e) {
                     logs.add(System.currentTimeMillis()/1000 + " Error copying file to usb device: " + e.getMessage() + "\n");

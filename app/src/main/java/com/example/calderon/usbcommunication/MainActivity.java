@@ -11,11 +11,11 @@ import android.database.Cursor;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -26,15 +26,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.mjdev.libaums.fs.UsbFile;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
-import static com.example.calderon.usbcommunication.R.*;
+import static com.example.calderon.usbcommunication.R.id;
+import static com.example.calderon.usbcommunication.R.layout;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_READWRITE_STORAGE = 10;
@@ -157,9 +154,9 @@ public class MainActivity extends AppCompatActivity {
         String file = files[index];
         String link = baseUrl+file;
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
-        request.setDestinationInExternalPublicDir("/Books/",file);
+        request.setDestinationInExternalPublicDir("/books/",file);
         currentDownloadId = manager.enqueue(request);
-        currentFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile()+"/Books/"+file);
+        currentFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile()+"/books/"+file);
         currentName = file;
         downloadIndex++;
         Toast.makeText(this, "start download : "+file, Toast.LENGTH_SHORT).show();
