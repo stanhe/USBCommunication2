@@ -13,6 +13,7 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -136,8 +137,18 @@ public class MainActivity extends AppCompatActivity {
     DownloadManager manager;
     public void downloadBooks(View view) {
         usbCommunicationManager.deleteFile();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                currentName = "05425_en.kii";
+                currentFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile()+"/books/"+currentName);
+                usbCommunicationManager.copyFileToUsbWithName(currentFile,currentName);
+            }
+        },1500);
+
+/*        usbCommunicationManager.deleteFile();
         manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-       startDownloadFile(downloadIndex);
+       startDownloadFile(downloadIndex);*/
     }
 
     //String[] files = new String[]{"05381_en.txt","05381_en.png","05381_en.kii","05425_en.txt","05425_en.png","05425_en.kii"};

@@ -171,19 +171,15 @@ public class UsbCommunicationManager {
                         UsbFile directory = root.createDirectory("book");
                         dirTo = directory;
                     }
-/*                    int counter = 0;
-                    for(UsbFile usbFile : dirTo.listFiles()) {
-                        counter = Integer.parseInt(usbFile.getName().substring(usbFile.getName().indexOf('_') + 1, usbFile.getName().indexOf('.')));
-                    }
-                    counter++;*/
-                    //UsbFile file = dirTo.createFile("myCreatedFile_" + counter + ".txt");
+
                     UsbFile file;
-                    /*if (param.name.endsWith("kii")) {
-                        file = root.createFile(param.name);
+                    if (param.name.endsWith("kii")) {
+                        //file = root.createFile(param.name);
+                        file = dirTo.createFile(param.name,true);
                     } else {
                         file = dirTo.createFile(param.name);
-                    }*/
-                    file = dirTo.createFile(param.name);
+                    }
+                    //file = dirTo.createFile(param.name);
 
                     InputStream inputStream = activity.getContentResolver().openInputStream(param.from);
                     OutputStream outputStream = UsbFileStreamFactory.createBufferedOutputStream(file, currentFileSystem);
@@ -196,12 +192,9 @@ public class UsbCommunicationManager {
                         outputStream.write(bytes, 0, count);
                     }
 
-                    outputStream.flush();
                     outputStream.close();
                     inputStream.close();
-                    file.flush();
                     file.close();
-
                     if (param.name.endsWith("kii")) {
                         logs.add(System.currentTimeMillis()/1000 + " start move kii file to book \n");
 

@@ -298,6 +298,9 @@ import java.util.Calendar;
 		return isFlagSet(FLAG_ARCHIVE);
 	}
 
+	void setArchive(){
+		setFlag(FLAG_ARCHIVE);
+	}
 	/**
 	 * Returns true if the current {@link #FatDirectoryEntry()} is a read only
 	 * file or directory. Normally a user shall not be able to write or to alter

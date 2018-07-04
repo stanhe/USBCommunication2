@@ -192,6 +192,11 @@ public class FatFile extends AbstractUsbFile {
 	}
 
 	@Override
+	public UsbFile createFile(String name, boolean isArchive) throws IOException {
+		throw new UnsupportedOperationException("This is a file!");
+	}
+
+	@Override
 	public void moveTo(UsbFile destination) throws IOException {
 		parent.move(entry, destination);
 		parent = (FatDirectory) destination;

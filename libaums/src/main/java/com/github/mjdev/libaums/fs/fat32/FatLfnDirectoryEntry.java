@@ -276,6 +276,10 @@ import java.util.List;
 		actualEntry.setDirectory();
 	}
 
+	void setArchive(){
+		actualEntry.setArchive();
+	}
+
 	/**
 	 * Returns the actual entry which holds the information like start cluster
 	 * or file size.
