@@ -117,10 +117,6 @@ import java.util.Locale;
 	 *            The short names already existing in the directory.
 	 * @return The generated short name.
 	 */
-	static  ShortName generateSimpleShortName(String lfnName,
-			Collection<ShortName> existingShortNames){
-		return new ShortName(lfnName,"");
-	}
 	/* package */static ShortName generateShortName(String lfnName,
 			Collection<ShortName> existingShortNames) {
 		lfnName = lfnName.toUpperCase(Locale.ROOT).trim();
@@ -207,7 +203,22 @@ import java.util.Locale;
 
 		return result;
 	}
-
+	/** generateSimpleShortName for fix pen long name can't be recognized.
+	 *  use short name 8+3
+	 * */
+	static  ShortName generateSimpleShortName(String lfnName, Collection<ShortName> existingShortNames) throws Exception {
+	    String[] kiiFile = lfnName.replace(".","").trim().split("_");
+	    String pre = kiiFile[0];
+	    String ext = kiiFile[1].toUpperCase();
+		ShortName result = new ShortName(pre+"_"+ext,"KII");
+		//ShortName result = new ShortName("05425_ENKII", "KII");
+		for (ShortName name : existingShortNames) {
+			if (name.equals(result)) {
+				throw new Exception("Same short file name!");
+			}
+		}
+		return result;
+	}
 	public static boolean containShortName(Collection<ShortName> shortNames, ShortName shortName) {
 		boolean contain = false;
 		for (ShortName temp : shortNames) {

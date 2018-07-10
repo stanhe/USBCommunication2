@@ -217,7 +217,7 @@ public interface UsbFile extends Closeable {
 	 */
 	UsbFile createFile(String name) throws IOException;
 
-	UsbFile createFile(String name,boolean isArchive) throws IOException;
+	UsbFile createFile(String name,boolean iskii) throws Exception;
 
 	/**
 	 * This methods moves THIS item to the destination directory. Make sure that

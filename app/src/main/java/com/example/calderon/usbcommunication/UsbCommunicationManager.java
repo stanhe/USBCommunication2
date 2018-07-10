@@ -160,26 +160,24 @@ public class UsbCommunicationManager {
                     UsbFile root = currentFileSystem.getRootDirectory();
                     UsbFile dirTo = null;
                     for(UsbFile usbFile : root.listFiles()){
-                        if(usbFile.getName().endsWith("bookxxxxbook")){
+                        if(usbFile.getName().endsWith("book")){
                             logs.add(System.currentTimeMillis()/1000 + " Folder usbCommunication found in usb device\n");
                             dirTo = usbFile;
                         }
                     }
                     if(dirTo == null) {
                         logs.add(System.currentTimeMillis()/1000 + " Creating folder usbCommunication in usb device\n");
-                        UsbFile directory = root.createDirectory("bookxxxxbook");
+                        UsbFile directory = root.createDirectory("book");
                         dirTo = directory;
                     }
 
                     UsbFile file;
-/*                    if (param.name.endsWith("kii")) {
-                        //file = root.createFile(param.name);
-                        file = dirTo.createFile(param.name,true);
-                    } else {
+                    //if you copy kii file ,then must set iskii ture else file = dirTo.createFile(param.name);
+                    if (param.name.endsWith(".kii")) {
+                        file = dirTo.createFile(param.name, true);
+                    }else {
                         file = dirTo.createFile(param.name);
-                    }*/
-                    //file = dirTo.createFile(param.name);
-                    file = dirTo.createFile(param.name,true);
+                    }
 
                     InputStream inputStream = activity.getContentResolver().openInputStream(param.from);
                     OutputStream outputStream = UsbFileStreamFactory.createBufferedOutputStream(file, currentFileSystem);
@@ -195,10 +193,6 @@ public class UsbCommunicationManager {
                     outputStream.close();
                     inputStream.close();
                     file.close();
-                    if (param.name.endsWith("kii")) {
-                        logs.add(System.currentTimeMillis()/1000 + " start move kii file to book \n");
-
-                    }
                     logs.add(System.currentTimeMillis()/1000 + " Successfully copied file to usb device: " + "/" + dirTo.getName() + "/" + file.getName() + "\n");
                 } catch (Exception e) {
                     logs.add(System.currentTimeMillis()/1000 + " Error copying file to usb device: " + e.getMessage() + "\n");
