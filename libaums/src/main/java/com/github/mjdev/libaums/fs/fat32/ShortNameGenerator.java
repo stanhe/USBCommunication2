@@ -117,6 +117,10 @@ import java.util.Locale;
 	 *            The short names already existing in the directory.
 	 * @return The generated short name.
 	 */
+	static  ShortName generateSimpleShortName(String lfnName,
+			Collection<ShortName> existingShortNames){
+		return new ShortName(lfnName,"");
+	}
 	/* package */static ShortName generateShortName(String lfnName,
 			Collection<ShortName> existingShortNames) {
 		lfnName = lfnName.toUpperCase(Locale.ROOT).trim();

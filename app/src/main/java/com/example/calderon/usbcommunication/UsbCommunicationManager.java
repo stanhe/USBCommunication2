@@ -131,7 +131,6 @@ public class UsbCommunicationManager {
         ct.execute(param);
     }
 
-
     private class CopyToUsbTaskParam {
         List<SingleToUsbParam> paramList;
 
@@ -161,25 +160,26 @@ public class UsbCommunicationManager {
                     UsbFile root = currentFileSystem.getRootDirectory();
                     UsbFile dirTo = null;
                     for(UsbFile usbFile : root.listFiles()){
-                        if(usbFile.getName().endsWith("book")){
+                        if(usbFile.getName().endsWith("bookxxxxbook")){
                             logs.add(System.currentTimeMillis()/1000 + " Folder usbCommunication found in usb device\n");
                             dirTo = usbFile;
                         }
                     }
                     if(dirTo == null) {
                         logs.add(System.currentTimeMillis()/1000 + " Creating folder usbCommunication in usb device\n");
-                        UsbFile directory = root.createDirectory("book");
+                        UsbFile directory = root.createDirectory("bookxxxxbook");
                         dirTo = directory;
                     }
 
                     UsbFile file;
-                    if (param.name.endsWith("kii")) {
+/*                    if (param.name.endsWith("kii")) {
                         //file = root.createFile(param.name);
                         file = dirTo.createFile(param.name,true);
                     } else {
                         file = dirTo.createFile(param.name);
-                    }
+                    }*/
                     //file = dirTo.createFile(param.name);
+                    file = dirTo.createFile(param.name,true);
 
                     InputStream inputStream = activity.getContentResolver().openInputStream(param.from);
                     OutputStream outputStream = UsbFileStreamFactory.createBufferedOutputStream(file, currentFileSystem);

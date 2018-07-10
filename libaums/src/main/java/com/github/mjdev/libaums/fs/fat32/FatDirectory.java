@@ -364,28 +364,31 @@ public class FatDirectory extends AbstractUsbFile {
 
 	@Override
 	public FatFile createFile(String name,boolean isArchive) throws IOException {
-		if (lfnMap.containsKey(name.toLowerCase(Locale.getDefault())))
-			throw new IOException("Item already exists!");
+		if (isArchive) {
 
-		init(); // initialise the directory before creating files
+			if (lfnMap.containsKey(name.toLowerCase(Locale.getDefault())))
+				throw new IOException("Item already exists!");
 
-		ShortName shortName = ShortNameGenerator.generateShortName(name, shortNameMap.keySet());
+			init(); // initialise the directory before creating files
 
-		FatLfnDirectoryEntry entry = FatLfnDirectoryEntry.createNew(name, shortName);
+			ShortName shortName = ShortNameGenerator.generateSimpleShortName(name, shortNameMap.keySet());
 
-		if (isArchive){
+			FatLfnDirectoryEntry entry = FatLfnDirectoryEntry.createNew(name, shortName);
+
 			entry.setArchive();
+			// alloc completely new chain
+			long newStartCluster = fat.alloc(new Long[0], 1)[0];
+			entry.setStartCluster(newStartCluster);
+
+			Log.d(TAG, "adding entry: " + entry + " with short name: " + shortName);
+			addEntry(entry, entry.getActualEntry());
+			// write changes immediately to disk
+			write();
+
+			return FatFile.create(entry, blockDevice, fat, bootSector, this);
+		} else {
+			return createFile(name);
 		}
-		// alloc completely new chain
-		long newStartCluster = fat.alloc(new Long[0], 1)[0];
-		entry.setStartCluster(newStartCluster);
-
-		Log.d(TAG, "adding entry: " + entry + " with short name: " + shortName);
-		addEntry(entry, entry.getActualEntry());
-		// write changes immediately to disk
-		write();
-
-		return FatFile.create(entry, blockDevice, fat, bootSector, this);
 	}
 
 
