@@ -160,21 +160,22 @@ public class UsbCommunicationManager {
                     UsbFile root = currentFileSystem.getRootDirectory();
                     UsbFile dirTo = null;
                     for(UsbFile usbFile : root.listFiles()){
-                        if(usbFile.getName().endsWith("book")){
+                        if(usbFile.getName().endsWith("bookxxxxbook")){
                             logs.add(System.currentTimeMillis()/1000 + " Folder usbCommunication found in usb device\n");
                             dirTo = usbFile;
                         }
                     }
                     if(dirTo == null) {
                         logs.add(System.currentTimeMillis()/1000 + " Creating folder usbCommunication in usb device\n");
-                        UsbFile directory = root.createDirectory("book");
+                        UsbFile directory = root.createDirectory("bookxxxxbook");
                         dirTo = directory;
                     }
 
                     UsbFile file;
                     //if you copy kii file ,then must set iskii ture else file = dirTo.createFile(param.name);
                     if (param.name.endsWith(".kii")) {
-                        file = dirTo.createFile(param.name, true);
+                        //file = dirTo.createFile(param.name, true);
+                        file = dirTo.createFile("05425_en_test.kii", false);
                     }else {
                         file = dirTo.createFile(param.name);
                     }
