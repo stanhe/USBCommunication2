@@ -207,10 +207,14 @@ import java.util.Locale;
 	 *  use short name 8+3
 	 * */
 	static  ShortName generateSimpleShortName(String lfnName, Collection<ShortName> existingShortNames) throws Exception {
-	    String[] kiiFile = lfnName.replace(".","").trim().split("_");
+
+		String sortName = lfnName.split("\\.")[0].toUpperCase();
+		String extention = lfnName.split("\\.")[1].toUpperCase();
+		ShortName result = new ShortName(sortName,extention);
+/*	    String[] kiiFile = lfnName.replace(".","").trim().split("_");
 	    String pre = kiiFile[0];
 	    String ext = kiiFile[1].toUpperCase();
-		ShortName result = new ShortName(pre+"_"+ext,"KII");
+		ShortName result = new ShortName(pre+"_"+ext,"KII");*/
 		//ShortName result = new ShortName("05425_ENKII", "KII");
 		for (ShortName name : existingShortNames) {
 			if (name.equals(result)) {

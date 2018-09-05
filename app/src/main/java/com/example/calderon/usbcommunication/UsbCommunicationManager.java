@@ -7,6 +7,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
@@ -15,10 +16,16 @@ import com.github.mjdev.libaums.fs.FileSystem;
 import com.github.mjdev.libaums.fs.UsbFile;
 import com.github.mjdev.libaums.fs.UsbFileStreamFactory;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 
 /**
@@ -80,6 +87,26 @@ public class UsbCommunicationManager {
         usbMassStorageDevices[0].close();
     }
 
+    /*====================================== 1.create delete files!  ======================================*/
+    public void createAndDeleteFiles(){
+        String path = Environment.getExternalStorageDirectory()+"/delete.txt";
+        File deletePath = new File(path);
+        if (deletePath.exists())
+            deletePath.delete();
+            try {
+                deletePath.createNewFile();
+                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(deletePath,true), StandardCharsets.UTF_8));
+                out.write("\\book\\05289_en.txt\r\n\\book\\05289_en.png\r\n\\book\\05289_en.kii\r\n");
+                out.flush();
+                out.close();
+                MainActivity.logTextView.append(System.currentTimeMillis()/1000 + "finish create delete file! \n");
+            } catch (IOException e) {
+                MainActivity.logTextView.append(System.currentTimeMillis()/1000 + "error create delete file! \n");
+                e.printStackTrace();
+            }
+        copyFileToUsbWithName(deletePath,"delete.txt");
+    }
+
     public void deleteFile() {
         MainActivity.logTextView.append(System.currentTimeMillis()/1000 + " start deleted file! \n");
         new Handler().post(new Runnable() {
@@ -91,7 +118,7 @@ public class UsbCommunicationManager {
                             //MainActivity.logTextView.append(System.currentTimeMillis()/1000 + "  file: "+usbFile.getName() +"\n");
                             if (usbFile.getName().contains("book")) {
                                 for (UsbFile bookChild : usbFile.listFiles()){
-                                    if (bookChild.getName().contains("05381") || (bookChild.getName().contains("05425"))) {
+                                    if (bookChild.getName().contains("05381") || (bookChild.getName().contains("05426"))) {
                                         String name = bookChild.getName();
                                         bookChild.delete();
                                         MainActivity.logTextView.append(System.currentTimeMillis()/1000 + " deleted file: "+name +"\n");
@@ -160,25 +187,22 @@ public class UsbCommunicationManager {
                     UsbFile root = currentFileSystem.getRootDirectory();
                     UsbFile dirTo = null;
                     for(UsbFile usbFile : root.listFiles()){
-                        if(usbFile.getName().endsWith("bookxxxxbook")){
+                        if(usbFile.getName().endsWith("configure")){
                             logs.add(System.currentTimeMillis()/1000 + " Folder usbCommunication found in usb device\n");
                             dirTo = usbFile;
                         }
                     }
                     if(dirTo == null) {
                         logs.add(System.currentTimeMillis()/1000 + " Creating folder usbCommunication in usb device\n");
-                        UsbFile directory = root.createDirectory("bookxxxxbook");
+                        UsbFile directory = root.createDirectory("configure");
                         dirTo = directory;
                     }
 
                     UsbFile file;
-                    //if you copy kii file ,then must set iskii ture else file = dirTo.createFile(param.name);
-                    if (param.name.endsWith(".kii")) {
-                        //file = dirTo.createFile(param.name, true);
-                        file = dirTo.createFile("05425_en_test.kii", false);
-                    }else {
-                        file = dirTo.createFile(param.name);
-                    }
+
+
+    /*====================================== 2.use sort file name  ======================================*/
+                    file = dirTo.createFile(param.name,true);
 
                     InputStream inputStream = activity.getContentResolver().openInputStream(param.from);
                     OutputStream outputStream = UsbFileStreamFactory.createBufferedOutputStream(file, currentFileSystem);

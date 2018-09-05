@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver usbReceiver = new UsbReceiver();
 
     public void deleteFile(View view) {
-        usbCommunicationManager.deleteFile();
+        usbCommunicationManager.createAndDeleteFiles();
     }
 
     private BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
     DownloadManager manager;
     public void downloadBooks(View view) {
-/*        usbCommunicationManager.deleteFile();
+        usbCommunicationManager.deleteFile();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -144,11 +144,11 @@ public class MainActivity extends AppCompatActivity {
                 currentFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile()+"/books/"+currentName);
                 usbCommunicationManager.copyFileToUsbWithName(currentFile,currentName);
             }
-        },1500);*/
+        },1500);
 
-        usbCommunicationManager.deleteFile();
+/*        usbCommunicationManager.deleteFile();
         manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        startDownloadFile(downloadIndex);
+        startDownloadFile(downloadIndex);*/
     }
 
     //String[] files = new String[]{"05381_en.txt","05381_en.png","05381_en.kii","05425_en.txt","05425_en.png","05425_en.kii"};
@@ -161,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
         if (index>files.length-1){
             return;
         }
-        String baseUrl = "https://gitee.com/stanhe/kiis/raw/master/";
-        //String baseUrl = "http://192.168.0.159:8085/file/";
+        //String baseUrl = "https://gitee.com/stanhe/kiis/raw/master/";
+        String baseUrl = "http://192.168.0.159:8085/file/";
         String file = files[index];
         String link = baseUrl+file;
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));

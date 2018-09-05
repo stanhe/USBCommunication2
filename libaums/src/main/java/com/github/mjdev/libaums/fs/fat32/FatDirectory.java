@@ -362,14 +362,16 @@ public class FatDirectory extends AbstractUsbFile {
 		return FatFile.create(entry, blockDevice, fat, bootSector, this);
 	}
 
-	/** fix pen can't recognize long file name.
-     *  target the xxxxxxxx.kii file
-	 *  name : short name.
-	 *  iskii : is current kii file.
-	 * */
+	/**
+	 *
+	 * @param name name.size must less than 11.
+	 * @param useSortName boolean.
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
-	public FatFile createFile(String name,boolean isKii) throws Exception {
-		if (isKii) {
+	public FatFile createFile(String name,boolean useSortName) throws Exception {
+		if (useSortName) {
 			if (lfnMap.containsKey(name.toLowerCase(Locale.getDefault())))
 				throw new IOException("Item already exists!");
 
@@ -379,7 +381,6 @@ public class FatDirectory extends AbstractUsbFile {
 
 			FatLfnDirectoryEntry entry = FatLfnDirectoryEntry.createNew(name, shortName);
 
-			entry.setArchive();
 			// alloc completely new chain
 			long newStartCluster = fat.alloc(new Long[0], 1)[0];
 			entry.setStartCluster(newStartCluster);
